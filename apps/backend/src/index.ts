@@ -5,6 +5,7 @@ import { healthRoutes } from './routes/health.js';
 import { configRoutes } from './routes/config.js';
 import { sourceRoutes } from './routes/sources.js';
 import { serviceRoutes } from './routes/services.js';
+import { eventsRoutes } from './routes/events.js';
 import { logger } from './lib/logger.js';
 import { readEnv } from './env.js';
 import { pickAggregator, type AnyAggregator } from './pipeline/index.js';
@@ -34,6 +35,7 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
   await app.register(configRoutes(store));
   await app.register(sourceRoutes);
   await app.register(serviceRoutes);
+  await app.register(eventsRoutes);
   return app;
 }
 

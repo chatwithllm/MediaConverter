@@ -1,7 +1,7 @@
 import { stat, readdir, access } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { resolve, relative } from 'node:path';
-import type { SourceDriver, ValidateResult, ListEntry } from './index.js';
+import type { SourceDriver, ListEntry } from './index.js';
 
 export interface LocalConfig {
   path: string;

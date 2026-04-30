@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SOURCE_TYPES, SourceConfigByType } from './source-types.js';
+import { SourceConfigByType } from './source-types.js';
 
 const baseSource = z.object({
   id: z.string().min(1),

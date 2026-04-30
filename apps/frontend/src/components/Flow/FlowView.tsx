@@ -6,7 +6,7 @@ import { TopologyNode } from './TopologyNode.js';
 import { TopologyArrow } from './TopologyArrow.js';
 import { TransferBadge } from './TransferBadge.js';
 
-export function FlowView() {
+export function FlowView({ onNodeClick }: { onNodeClick?: (id: string) => void }) {
   const { snapshot, status } = useEventStream();
   const indicators = useMemo(() => deriveIndicators(snapshot), [snapshot]);
 
@@ -45,6 +45,7 @@ export function FlowView() {
             layout={n}
             active={indicators.activeNodes.has(n.id)}
             count={indicators.countsByNode[n.id]}
+            {...(onNodeClick ? { onClick: () => onNodeClick(n.id) } : {})}
           />
         ))}
         {indicators.transfers.map((t) => {

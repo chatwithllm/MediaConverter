@@ -4,13 +4,25 @@ import { api } from './api/client.js';
 import { SettingsPage } from './pages/SettingsPage.js';
 import { OnboardingPage } from './pages/OnboardingPage.js';
 import { FlowPage } from './pages/FlowPage.js';
+import { KanbanPage } from './pages/KanbanPage.js';
+import type { KanbanColumnId } from './components/Kanban/kanban-state.js';
 
-type Tab = 'flow' | 'settings';
+type Tab = 'flow' | 'kanban' | 'settings';
+
+const NODE_TO_COLUMN: Record<string, KanbanColumnId | undefined> = {
+  truenas: 'discovered',
+  tdarr: 'queued',
+  m4: 'encoding-m4',
+  m1: 'encoding-m1',
+  plex: 'in_plex',
+  failed: 'failed',
+};
 
 export default function App() {
   const [config, setConfig] = useState<Config | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [tab, setTab] = useState<Tab>('flow');
+  const [kanbanFilter, setKanbanFilter] = useState<KanbanColumnId | undefined>(undefined);
 
   useEffect(() => {
     api.getConfig().then(setConfig);
@@ -34,14 +46,17 @@ export default function App() {
       <header className="mb-6 flex items-center gap-4">
         <h1 className="text-2xl font-semibold text-accent">TranscodePipelineDash</h1>
         <nav className="flex gap-1 ml-auto">
-          {(['flow', 'settings'] as const).map((t) => (
+          {(['flow', 'kanban', 'settings'] as const).map((t) => (
             <button
               key={t}
               className={
                 'text-sm px-3 py-1 rounded ' +
                 (tab === t ? 'bg-accent text-white' : 'bg-ink/10 hover:bg-ink/15')
               }
-              onClick={() => setTab(t)}
+              onClick={() => {
+                setTab(t);
+                if (t !== 'kanban') setKanbanFilter(undefined);
+              }}
             >
               {t}
             </button>
@@ -57,7 +72,23 @@ export default function App() {
           </button>
         </nav>
       </header>
-      <main>{tab === 'flow' ? <FlowPage /> : <SettingsPage />}</main>
+      <main>
+        {tab === 'flow' && (
+          <FlowPage
+            onNodeClick={(nodeId: string) => {
+              const col = NODE_TO_COLUMN[nodeId];
+              if (col) {
+                setKanbanFilter(col);
+                setTab('kanban');
+              }
+            }}
+          />
+        )}
+        {tab === 'kanban' && (
+          <KanbanPage {...(kanbanFilter ? { filterColumn: kanbanFilter } : {})} />
+        )}
+        {tab === 'settings' && <SettingsPage />}
+      </main>
     </div>
   );
 }

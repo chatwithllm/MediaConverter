@@ -20,6 +20,7 @@ beforeEach(() => {
     onopen: (() => void) | null = null;
     onerror: (() => void) | null = null;
     constructor(_url: string) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       lastES = this;
       queueMicrotask(() => this.onopen?.());
     }

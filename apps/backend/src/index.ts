@@ -4,6 +4,7 @@ import { ConfigStore } from './config-store.js';
 import { healthRoutes } from './routes/health.js';
 import { configRoutes } from './routes/config.js';
 import { sourceRoutes } from './routes/sources.js';
+import { serviceRoutes } from './routes/services.js';
 import { logger } from './lib/logger.js';
 import { readEnv } from './env.js';
 
@@ -18,6 +19,7 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
   await app.register(healthRoutes);
   await app.register(configRoutes(store));
   await app.register(sourceRoutes);
+  await app.register(serviceRoutes);
   return app;
 }
 

@@ -7,3 +7,4 @@ dist/
 apps/backend/data/config.json
 apps/backend/data/*.key
 coverage/
+*.tsbuildinfo

@@ -1,0 +1,16 @@
+:root {
+  --color-canvas: #f2f0eb;
+  --color-ink: #1d1d1d;
+  --color-accent: #006241;
+  --color-accent-dim: #1a8a5a;
+  --color-accent-bright: #3aa97a;
+  --color-warn: #c8541b;
+  --color-danger: #a31518;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: 'SoDoSans', system-ui, sans-serif;
+  margin: 0;
+}

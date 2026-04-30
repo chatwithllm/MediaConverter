@@ -29,4 +29,13 @@ export const api = {
       config,
       subPath,
     }),
+  testService: (
+    kind: 'plex' | 'tdarr' | 'smartkanban',
+    body: Record<string, string>,
+  ) =>
+    http<{ ok: boolean; error?: string; status?: number }>(
+      'POST',
+      `/api/services/${kind}/test`,
+      body,
+    ),
 };

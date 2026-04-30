@@ -3,6 +3,54 @@ import type { Source } from '@tpd/shared';
 import { api } from '../../api/client.js';
 import { ConnectionBadge, type ConnectionState } from './ConnectionBadge.js';
 
+const SOURCE_TYPE_OPTIONS: Array<{ value: Source['type']; disabled?: boolean }> = [
+  { value: 'local' },
+  { value: 'truenas' },
+  { value: 'smb' },
+  { value: 'nfs' },
+  { value: 'rclone', disabled: true },
+];
+
+function defaultConfigFor(type: Source['type']): Source['config'] {
+  switch (type) {
+    case 'local':
+      return { path: '' };
+    case 'smb':
+      return { host: '', share: '', username: '', password: '' };
+    case 'truenas':
+      return { host: '', share: '', username: '', password: '' };
+    case 'nfs':
+      return { host: '', exportPath: '', version: '4' };
+    case 'rclone':
+      return { remote: '' };
+  }
+}
+
+interface FieldDef { name: string; label: string; type?: 'text' | 'password' | 'number' | 'select'; options?: string[]; }
+
+const FIELDS_BY_TYPE: Record<Source['type'], FieldDef[]> = {
+  local: [{ name: 'path', label: 'Path' }],
+  smb: [
+    { name: 'host', label: 'Host' },
+    { name: 'share', label: 'Share' },
+    { name: 'username', label: 'Username' },
+    { name: 'password', label: 'Password', type: 'password' },
+    { name: 'domain', label: 'Domain (optional)' },
+  ],
+  truenas: [
+    { name: 'host', label: 'TrueNAS host' },
+    { name: 'share', label: 'SMB share' },
+    { name: 'username', label: 'Username' },
+    { name: 'password', label: 'Password', type: 'password' },
+  ],
+  nfs: [
+    { name: 'host', label: 'Host' },
+    { name: 'exportPath', label: 'Export path' },
+    { name: 'version', label: 'NFS version', type: 'select', options: ['3', '4'] },
+  ],
+  rclone: [{ name: 'remote', label: 'Rclone remote' }],
+};
+
 export function SourceRow({
   source,
   onChange,
@@ -20,17 +68,18 @@ export function SourceRow({
     setConn({ state: 'testing' });
     try {
       const r = await api.testSource(source.type, source.config);
-      setConn(r.error !== undefined
-        ? { state: r.ok ? 'ok' : 'error', message: r.error }
-        : { state: r.ok ? 'ok' : 'error' });
+      setConn(r.ok ? { state: 'ok' } : { state: 'error', ...(r.error !== undefined ? { message: r.error } : {}) });
     } catch (e) {
       setConn({ state: 'error', message: (e as Error).message });
     }
   }
 
+  const fields = FIELDS_BY_TYPE[source.type];
+  const cfg = source.config as Record<string, string>;
+
   return (
     <div className="border rounded p-3 mb-2 bg-white/50">
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center gap-2 flex-wrap mb-2">
         <input
           className="border px-2 py-1 rounded"
           placeholder="Label"
@@ -42,33 +91,65 @@ export function SourceRow({
           value={source.type}
           onChange={(e) => {
             const type = e.target.value as Source['type'];
-            const config = type === 'local' ? { path: '' } : {};
-            onChange({ ...source, type, config } as Source);
+            onChange({ ...source, type, config: defaultConfigFor(type) } as Source);
           }}
         >
-          <option value="local">local</option>
-          <option value="truenas" disabled>truenas (3b)</option>
-          <option value="smb" disabled>smb (3b)</option>
-          <option value="nfs" disabled>nfs (3b)</option>
-          <option value="rclone" disabled>rclone (3b)</option>
+          {SOURCE_TYPE_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value} disabled={opt.disabled}>
+              {opt.value}
+              {opt.disabled ? ' (3c)' : ''}
+            </option>
+          ))}
         </select>
-        {source.type === 'local' && (
-          <input
-            className="border px-2 py-1 rounded grow"
-            placeholder="/absolute/path"
-            value={(source.config as { path: string }).path}
-            onChange={(e) =>
-              onChange({ ...source, config: { path: e.target.value } } as Source)
-            }
-          />
-        )}
         <button className="px-3 py-1 border rounded" onClick={test}>
           Test
         </button>
         <ConnectionBadge state={conn.state} {...(conn.message !== undefined ? { message: conn.message } : {})} />
-        <button className="px-3 py-1 border rounded text-danger" onClick={onRemove}>
+        <button className="px-3 py-1 border rounded text-danger ml-auto" onClick={onRemove}>
           Remove
         </button>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {fields.map((f) => {
+          const value = cfg[f.name] ?? '';
+          if (f.type === 'select' && f.options) {
+            return (
+              <label key={f.name} className="flex flex-col text-xs">
+                <span className="opacity-70">{f.label}</span>
+                <select
+                  className="border px-2 py-1 rounded"
+                  value={value}
+                  onChange={(e) =>
+                    onChange({
+                      ...source,
+                      config: { ...cfg, [f.name]: e.target.value },
+                    } as Source)
+                  }
+                >
+                  {f.options.map((o) => (
+                    <option key={o} value={o}>{o}</option>
+                  ))}
+                </select>
+              </label>
+            );
+          }
+          return (
+            <label key={f.name} className="flex flex-col text-xs">
+              <span className="opacity-70">{f.label}</span>
+              <input
+                className="border px-2 py-1 rounded"
+                type={f.type ?? 'text'}
+                value={value}
+                onChange={(e) =>
+                  onChange({
+                    ...source,
+                    config: { ...cfg, [f.name]: e.target.value },
+                  } as Source)
+                }
+              />
+            </label>
+          );
+        })}
       </div>
     </div>
   );

@@ -1,23 +1,53 @@
 @keyframes flow-pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(58, 169, 122, 0.5); }
-  70%  { box-shadow: 0 0 0 12px rgba(58, 169, 122, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(58, 169, 122, 0); }
+  0%   { box-shadow: 0 0 0 0 rgba(26, 138, 90, 0.55), 0 4px 14px rgba(26, 138, 90, 0.15); }
+  70%  { box-shadow: 0 0 0 14px rgba(26, 138, 90, 0), 0 4px 14px rgba(26, 138, 90, 0.15); }
+  100% { box-shadow: 0 0 0 0 rgba(26, 138, 90, 0), 0 4px 14px rgba(26, 138, 90, 0.15); }
 }
 
 .flow-node-active {
-  animation: flow-pulse 1.6s ease-out infinite;
-  border-color: #1a8a5a;
+  animation: flow-pulse 2s ease-out infinite;
 }
 
 @keyframes flow-dash {
-  to { stroke-dashoffset: -16; }
+  to { stroke-dashoffset: -28; }
 }
 
 .flow-arrow-active {
-  animation: flow-dash 1.2s linear infinite;
+  animation: flow-dash 1.4s linear infinite;
+}
+
+@keyframes flow-canvas-shimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.flow-canvas {
+  background:
+    radial-gradient(circle at 12% 30%, rgba(26, 138, 90, 0.05), transparent 35%),
+    radial-gradient(circle at 88% 70%, rgba(26, 138, 90, 0.05), transparent 35%),
+    linear-gradient(135deg, #f6f4ee 0%, #ecead8 100%);
+  background-size: 200% 200%;
+  animation: flow-canvas-shimmer 18s ease-in-out infinite;
+}
+
+.flow-zone-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  fill: #4a5950;
+  font-weight: 600;
+  opacity: 0.55;
+}
+
+.kpi-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .flow-node-active { animation: none; }
   .flow-arrow-active { animation: none; }
+  .flow-canvas { animation: none; }
 }

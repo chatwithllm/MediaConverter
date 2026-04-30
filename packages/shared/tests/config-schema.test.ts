@@ -104,3 +104,57 @@ describe('ConfigSchema', () => {
     ).toThrow(/sourceId.*not found/);
   });
 });
+
+describe('Source types beyond local', () => {
+  it('accepts smb', () => {
+    const s = SourceSchema.parse({
+      id: 's', label: 's', type: 'smb',
+      config: { host: '10.0.0.1', share: 'media', username: 'u', password: 'p' },
+    });
+    expect(s.type).toBe('smb');
+  });
+  it('accepts nfs with default version', () => {
+    const s = SourceSchema.parse({
+      id: 's', label: 's', type: 'nfs',
+      config: { host: '10.0.0.1', exportPath: '/mnt/tank/media' },
+    });
+    expect(s.type).toBe('nfs');
+    if (s.type === 'nfs') expect(s.config.version).toBe('4');
+  });
+  it('accepts truenas with optional ssh block', () => {
+    const s = SourceSchema.parse({
+      id: 's', label: 's', type: 'truenas',
+      config: {
+        host: '192.168.50.11', share: 'media', username: 'tdarr', password: 'p',
+        ssh: { user: 'admin' },
+      },
+    });
+    expect(s.type).toBe('truenas');
+  });
+});
+
+describe('Service groups', () => {
+  it('accepts an empty plex/tdarr/smartKanban', () => {
+    const cfg = ConfigSchema.parse({ schemaVersion: 1, sources: [], libraries: [] });
+    expect(cfg.plex.url).toBe('');
+    expect(cfg.tdarr.url).toBe('');
+    expect(cfg.smartKanban.url).toBe('');
+  });
+  it('rejects an invalid plex url', () => {
+    expect(() =>
+      ConfigSchema.parse({
+        schemaVersion: 1, sources: [], libraries: [],
+        plex: { url: 'not-a-url', token: '' },
+      }),
+    ).toThrow();
+  });
+});
+
+describe('EncodeTargets defaults', () => {
+  it('fills sensible defaults', () => {
+    const cfg = ConfigSchema.parse({ schemaVersion: 1, sources: [], libraries: [] });
+    expect(cfg.encodeTargets.hevc4kBitrateMbps).toBe(25);
+    expect(cfg.encodeTargets.tonemapAlgorithm).toBe('hable');
+    expect(cfg.encodeTargets.enable4kHevcVariant).toBe(true);
+  });
+});

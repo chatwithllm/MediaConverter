@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useEventStream } from '../../hooks/useEventStream.js';
-import { NODES, ARROWS } from './flow-layout.js';
+import { NODES, ARROWS, VIEW_BOX } from './flow-layout.js';
 import { deriveIndicators } from './flow-state.js';
 import { TopologyNode } from './TopologyNode.js';
 import { TopologyArrow } from './TopologyArrow.js';
@@ -30,7 +30,10 @@ export function FlowView({ onNodeClick }: { onNodeClick?: (id: string) => void }
           {indicators.failedCount > 0 && `${indicators.failedCount} failed`}
         </span>
       </div>
-      <svg viewBox="0 0 800 400" className="w-full max-w-4xl border rounded bg-canvas">
+      <svg
+        viewBox={`0 0 ${VIEW_BOX.w} ${VIEW_BOX.h}`}
+        className="w-full max-w-5xl border rounded bg-canvas"
+      >
         {ARROWS.map((a) => (
           <TopologyArrow
             key={a.id}

@@ -16,20 +16,22 @@ export interface ArrowLayout {
   d: string;
 }
 
+export const VIEW_BOX = { w: 1000, h: 440 };
+
 export const NODES: NodeLayout[] = [
-  { id: 'truenas', label: 'TrueNAS',     icon: '📦', x:  60, y: 160 },
-  { id: 'tdarr',   label: 'Tdarr',       icon: '🎛️', x: 240, y: 160 },
-  { id: 'm4',      label: 'Mac Mini M4', icon: '🍎', x: 440, y:  80 },
-  { id: 'm1',      label: 'MBP M1',      icon: '💻', x: 440, y: 240 },
-  { id: 'plex',    label: 'Plex',        icon: '▶︎',  x: 640, y: 160 },
-  { id: 'failed',  label: 'Failed',      icon: '🚨', x: 240, y: 320 },
+  { id: 'truenas', label: 'TrueNAS',     icon: '📦', x: 100, y: 180 },
+  { id: 'tdarr',   label: 'Tdarr',       icon: '🎛️', x: 320, y: 180 },
+  { id: 'm4',      label: 'Mac Mini M4', icon: '🍎', x: 560, y:  90 },
+  { id: 'm1',      label: 'MBP M1',      icon: '💻', x: 560, y: 270 },
+  { id: 'plex',    label: 'Plex',        icon: '▶︎',  x: 820, y: 180 },
+  { id: 'failed',  label: 'Failed',      icon: '🚨', x: 320, y: 380 },
 ];
 
 export const ARROWS: ArrowLayout[] = [
-  { id: 'truenas-tdarr', from: 'truenas', to: 'tdarr', d: 'M150 175 L240 175' },
-  { id: 'tdarr-m4',      from: 'tdarr',   to: 'm4',    d: 'M330 165 L440 95'  },
-  { id: 'tdarr-m1',      from: 'tdarr',   to: 'm1',    d: 'M330 185 L440 255' },
-  { id: 'm4-plex',       from: 'm4',      to: 'plex',  d: 'M530 95  L640 165' },
-  { id: 'm1-plex',       from: 'm1',      to: 'plex',  d: 'M530 255 L640 185' },
-  { id: 'tdarr-failed',  from: 'tdarr',   to: 'failed',d: 'M285 195 L240 320' },
+  { id: 'truenas-tdarr', from: 'truenas', to: 'tdarr', d: 'M175 180 L245 180' },
+  { id: 'tdarr-m4',      from: 'tdarr',   to: 'm4',    d: 'M395 165 L485 105' },
+  { id: 'tdarr-m1',      from: 'tdarr',   to: 'm1',    d: 'M395 195 L485 255' },
+  { id: 'm4-plex',       from: 'm4',      to: 'plex',  d: 'M635 105 L745 165' },
+  { id: 'm1-plex',       from: 'm1',      to: 'plex',  d: 'M635 255 L745 195' },
+  { id: 'tdarr-failed',  from: 'tdarr',   to: 'failed',d: 'M320 215 L320 348' },
 ];

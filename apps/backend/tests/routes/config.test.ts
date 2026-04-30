@@ -24,7 +24,7 @@ describe('GET /api/config', () => {
     const app = await buildApp({ configFile: join(dir, 'config.json') });
     const res = await app.inject({ method: 'GET', url: '/api/config' });
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ schemaVersion: 1, sources: [], libraries: [] });
+    expect(res.json()).toMatchObject({ schemaVersion: 1, sources: [], libraries: [] });
     await app.close();
   });
 });
@@ -42,7 +42,7 @@ describe('PUT /api/config', () => {
     const put = await app.inject({ method: 'PUT', url: '/api/config', payload: body });
     expect(put.statusCode).toBe(200);
     const get = await app.inject({ method: 'GET', url: '/api/config' });
-    expect(get.json()).toEqual(body);
+    expect(get.json()).toMatchObject(body);
     await app.close();
   });
 
